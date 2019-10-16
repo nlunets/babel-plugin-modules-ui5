@@ -54,9 +54,20 @@ return {
                 // }
 
                 for (const [source, metadata] of meta.source) {
-                    amdArgs.push(t.stringLiteral(source));
-                    // MOD use an identifier around the metadata.name
-                    importNames.push(t.identifier(metadata.name));
+
+                    if (metadata.imports && metadata.imports.size !== 0) {
+                        // MOD use an identifier around the metadata.name
+                        for (const [subSource, target] of metadata.imports) {
+                            amdArgs.push(t.stringLiteral(source + "/" + target));
+                            importNames.push(t.identifier(subSource));
+                        }
+                    }
+                    else {
+                        amdArgs.push(t.stringLiteral(source));
+                        // MOD use an identifier around the metadata.name
+                        importNames.push(t.identifier(metadata.name));
+                    }
+
 
                     if (!isSideEffectImport(metadata)) {
                         const interop = wrapInterop(
